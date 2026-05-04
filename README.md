@@ -6,11 +6,12 @@ This pattern is useful when you have multiple applications running on subdomains
 
 ## Applications in this Solution
 
-The solution consists of three Blazor Web Apps:
+The solution consists of four Blazor Web Apps:
 
 1. **AnkkaAuth**: The Identity Provider (IdP). This application handles user authentication and sets the shared authentication cookie. It contains the central login page.
 2. **PulttiBoys**: A client application. It relies on the shared cookie for authentication. If an unauthenticated user attempts to access a protected resource, they are redirected to `AnkkaAuth` to log in.
 3. **PekoniBoys**: Another client application acting identically to `PulttiBoys` to demonstrate that multiple apps can share the same login session.
+4. **AnotherDomainApp**: A client application hosted on a different domain (`anotherdomainapp.eridomain.com`). It serves to demonstrate that the shared cookie won't work across different base domains, as the browser will not send the `.yhteinendomain.com` cookie to `.eridomain.com`.
 
 ## How It Works
 
@@ -46,8 +47,9 @@ The shared cookie SSO pattern relies on the following configurations being ident
 
 ```text
 127.0.0.1 auth.yhteinendomain.com
-127.0.0.1 app1.yhteinendomain.com
-127.0.0.1 app2.yhteinendomain.com
+127.0.0.1 pulttiboys.yhteinendomain.com
+127.0.0.1 pekoniboys.yhteinendomain.com
+127.0.0.1 anotherdomainapp.eridomain.com
 ```
 
 ### Configuration

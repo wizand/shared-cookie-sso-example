@@ -2,5 +2,6 @@
   <Project Path="AnkkaAuth/AnkkaAuth.csproj" />
   <Project Path="PekoniBoys/PekoniBoys.csproj" />
   <Project Path="PulttiBoys/PulttiBoys.csproj" />
+  <Project Path="AnotherDomainApp/AnotherDomainApp.csproj" />
   <Project Path="SharedCommon/SharedCommon.csproj" />
 </Solution>
