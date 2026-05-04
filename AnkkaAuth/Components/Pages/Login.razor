@@ -1,0 +1,94 @@
+@page "/login"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager NavigationManager
+@inject IHttpContextAccessor HttpContextAccessor
+
+<PageTitle>Log In</PageTitle>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title text-center mb-4">Log In to AnkkaAuth</h3>
+                
+                @if (!string.IsNullOrEmpty(ErrorMessage))
+                {
+                    <div class="alert alert-danger">@ErrorMessage</div>
+                }
+
+                <form method="post" action="@($"/login{(string.IsNullOrEmpty(ReturnUrl) ? "" : "?ReturnUrl=" + Uri.EscapeDataString(ReturnUrl))}")" data-enhance="false" @formname="loginForm">
+                    <AntiforgeryToken />
+                    
+                    <input type="hidden" name="ReturnUrl" value="@ReturnUrl" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input name="Username" class="form-control" value="@Username" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="Password" class="form-control" required />
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? CascadingHttpContext { get; set; }
+
+    [SupplyParameterFromQuery]
+    public string? ReturnUrl { get; set; }
+
+    [SupplyParameterFromForm]
+    public string? Username { get; set; }
+
+    [SupplyParameterFromForm]
+    public string? Password { get; set; }
+
+    public string? ErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var httpContext = CascadingHttpContext ?? HttpContextAccessor.HttpContext;
+
+        if (httpContext != null && HttpMethods.IsPost(httpContext.Request.Method))
+        {
+            // For demonstration purposes, we are using hardcoded credentials. In a real application, you would validate against a user store.
+            if (Username == SharedCommon.SsoConstants.TestUsername && Password == SharedCommon.SsoConstants.TestPassword)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, Username),
+                    new Claim(ClaimTypes.Role, SharedCommon.SsoConstants.TestRole)
+                };
+                
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                
+                await httpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme, 
+                    new ClaimsPrincipal(claimsIdentity));
+
+                // Make sure to use forceLoad to fully reload and set cookies if we were returning to the same domain.
+                // Redirect back to the return URL if it exists and is a valid absolute URI (from the other apps).
+                // Or if it's a local path.
+                string redirectTarget = string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl;
+                NavigationManager.NavigateTo(redirectTarget, forceLoad: true);
+            }
+            else
+            {
+                ErrorMessage = $"Invalid username or password. Please use '{SharedCommon.SsoConstants.TestUsername}' and '{SharedCommon.SsoConstants.TestPassword}'.";
+            }
+        }
+    }
+}

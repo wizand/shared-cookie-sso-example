@@ -1,0 +1,33 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+
+<PageTitle>AnkkaAuth</PageTitle>
+
+<h1>AnkkaAuth - Identity Provider</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="alert alert-success">
+            You are logged in as: <strong>@context.User.Identity?.Name</strong>
+        </div>
+        <p>
+            <a href="/logout" class="btn btn-danger">Log Out</a>
+        </p>
+        <p>
+            You can now access the other apps:
+            <ul>
+                <li><a href="http://pulttiboys.yhteinendomain.com:5002">PulttiBoys</a></li>
+                <li><a href="http://pekoniboys.yhteinendomain.com:5003">PekoniBoys</a></li>
+            </ul>
+        </p>
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-info">
+            You are not logged in.
+        </div>
+        <p>
+            <a href="/login" class="btn btn-primary">Go to Login Page</a>
+        </p>
+    </NotAuthorized>
+</AuthorizeView>

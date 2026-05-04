@@ -1,0 +1,29 @@
+@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager NavigationManager
+
+<PageTitle>PekoniBoys</PageTitle>
+
+<h1>PekoniBoys - Client App</h1>
+
+<AuthorizeView>
+    <Authorized>
+        <div class="alert alert-success">
+            Welcome to PekoniBoys! You are authenticated via SSO as: <strong>@context.User.Identity?.Name</strong>
+        </div>
+        <p>
+            Go to <a href="http://pulttiboys.yhteinendomain.com:5002">PulttiBoys</a>
+        </p>
+        <p>
+            <a href="http://auth.yhteinendomain.com:5001/logout?returnUrl=@Uri.EscapeDataString(NavigationManager.Uri)" class="btn btn-danger">Log Out</a>
+        </p>
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-warning">
+            You are not authenticated! The shared cookie was not found or is invalid.
+        </div>
+        <p>
+            <a href="http://auth.yhteinendomain.com:5001/login?returnUrl=@Uri.EscapeDataString(NavigationManager.Uri)" class="btn btn-primary">Go to Identity Provider to Log In</a>
+        </p>
+    </NotAuthorized>
+</AuthorizeView>
